@@ -1,0 +1,96 @@
+<html>
+  <head>
+    <title>Raspberry Pi Car Control</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/home.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+     $(function() {
+
+       $("#motor-1-speed-container").html("0");
+       $("#motor-2-speed-container").html("0");
+
+       $("#motor-1-speed").slider({
+	 max: 255,
+	 change: function(event, ui) {
+	   $("#motor-1-speed-container").text($('#motor-1-speed').slider("option", "value"));
+	 }
+       });
+
+       $("#motor-2-speed" ).slider({
+	 max: 255,
+	 change: function(event, ui) {
+	   $("#motor-2-speed-container").text($('#motor-2-speed').slider("option", "value"));
+	 }
+       });
+     });
+    </script>
+  </head>
+
+  <body>
+
+    <div class="container">
+      <h1 class="text-center mt-3 mb-3">Raspberry Pi Car Controller</h1>
+
+      <div class="row">
+	<div class="col-md-8 offset-md-2 text-center mt-3 mb-3">
+	  <img src = "{{ url_for('video_feed') }}">
+	</div>
+      </div>
+
+      <div class="row">
+	<div class="col-md-1 offset-md-3 mt-3">
+	  <div id="motor-1-speed-container" class="badge badge-primary"></div>
+	</div>
+	<div class="col-md-5 mt-3 mb-3">
+	  <div id="motor-1-speed"></div>
+	</div>
+      </div>
+
+      <div class="row">
+	<div class="col-md-1 offset-md-3 mt-3">
+	  <div id="motor-2-speed-container" class="badge badge-primary"></div>
+	</div>
+	<div class="col-md-5 mt-3 mb-3">
+	  <div id="motor-2-speed"></div>
+	</div>
+      </div>
+
+      <div class="row">
+	<div class="col-md-8 offset-md-2 text-center mt-3 mb-3">
+	  <a href="#" data-direction="forward" class="btn btn-primary">Move Forward</a>
+	  <a href="#" data-direction="reverse" class="btn btn-primary">Move Reverse</a>
+	  <a href="#" data-direction="left" class="btn btn-primary">Move Left</a>
+	  <a href="#" data-direction="right" class="btn btn-primary">Move Right</a>
+	  <a href="#" data-direction="stop" class="btn btn-primary">Stop</a>
+	</div>
+      </div>
+
+    </div>
+
+    <script type="text/javascript">
+     var anchors = document.getElementsByTagName('a');
+
+     for (var i = 0; i < anchors.length; i++) {
+       anchor = anchors[i];
+       anchor.addEventListener('click', function(event) {
+	 event.preventDefault();
+
+	 var direction = this.dataset.direction;
+	 var xmlhttp = new XMLHttpRequest();
+
+	 var params = "left=" +
+		      $('#motor-1-speed').slider("option", "value") +
+		      "&right=" +
+		      $('#motor-2-speed').slider("option", "value")
+
+
+	 xmlhttp.open("GET", "/navigate/" + direction + "?" + params, true);
+	 xmlhttp.send();
+       })
+     }
+    </script>
+  </body>
+</html>
